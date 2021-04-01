@@ -18,9 +18,9 @@ app.get("/", (request, response) => {
 });
 
 // send the default array of dreams to the webpage
-app.get("/dreams", (request, response) => {
+app.get("/second", (request, response) => {
   // express helps us take JS objects and send them as JSON
-  response.json(dreams);
+  response.sendFile(__dirname + "/views/second.html");
 });
 
 // listen for requests :)
