@@ -4,7 +4,7 @@
   "description": "XRProject For WebXR",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -15,9 +15,17 @@
   "bugs": {
     "url": "https://github.com/choco0908/XRProjectViaGlitch/issues"
   },
-  "homepage": "https://github.com/choco0908/XRProjectViaGlitch#readme",
+  "homepage": "https://github.com/choco0908/XRProjectViaGlitch#index.html",
   "dependencies": {
     "aframe": "^1.2.0",
     "express": "^4.17.1"
-  }
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ]
 }
