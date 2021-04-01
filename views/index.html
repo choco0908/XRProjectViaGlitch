@@ -3,7 +3,7 @@
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
     <script src="https://unpkg.com/aframe-extras.ocean@%5E3.5.x/dist/aframe-extras.ocean.min.js"></script>
-    <script src="https://unpkg.com/aframe-gradient-sky@1.2.0/dist/gradientsky.min.js"></script>
+    <script src="https://unpkg.com/aframe-gradient-sky@1.0.4/dist/gradientsky.min.js"></script>
     <script src="./aframe-super-shooter-kit.min.js"></script>
     <script>
     /**
@@ -43,14 +43,14 @@
   </head>
   <body>
     <a-scene>
-      <a-entity id="rain" particle-system="preset: rain; color: #24CAFF; particleCount: 5000"></a-entity>
+      <!--<a-entity id="rain" particle-system="preset: rain; color: #24CAFF; particleCount: 5000"></a-entity>-->
       <a-entity id="bulletTemplate" bullet geometry="primitive: sphere; radius: 0.1" material="color: orange"></a-entity>
       <a-box position="-1 1.5 -4" rotation="0 45 0" color="#4CC3D9" dynamic-body></a-box>
       <a-entity class="target" target="healthPoints: 10" geometry="primitive: box" material="color: teal" position="0 0 -4" hit-handler></a-entity>
       <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4" static-body></a-plane>
       <!--<a-entity id="gun" shooter geometry="primitive: box; width: 0.1; height: 0.1; depth: 0.3" material="color: red" click-to-shoot position="0 0 -1"></a-entity>-->
       <a-camera id="camera" position="-1 1 0" shooter click-to-shoot></a-camera>
-      <a-entity id="sky" geometry="primitive: sphere; radius: 5000" material="shader: gradient; topColor: 235 235 245; bottomColor: 185 185 210" scale="-1 1 1"></a-entity>
+      <a-entity id="sky" geometry="primitive: sphere; radius: 5000" scale="-1 1 1"></a-entity>
     </a-scene>
   </body>
 </html>
