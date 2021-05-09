@@ -23,6 +23,12 @@ app.get("/second", (request, response) => {
   response.sendFile(__dirname + "/views/second.html");
 });
 
+// send the default array of dreams to the webpage
+app.get("/controller", (request, response) => {
+  // express helps us take JS objects and send them as JSON
+  response.sendFile(__dirname + "/views/controller.html");
+});
+
 // listen for requests :)
 const listener = app.listen(process.env.PORT, () => {
   console.log("Your app is listening on port " + listener.address().port);
