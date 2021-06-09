@@ -4,22 +4,25 @@
     <script src="https://unpkg.com/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
     <script src="https://unpkg.com/aframe-extras.ocean@%5E3.5.x/dist/aframe-extras.ocean.min.js"></script>
     <script src="https://unpkg.com/aframe-gradient-sky@1.0.4/dist/gradientsky.min.js"></script>
+    <script src="/js/visualjoystick.js"></script>
     <script>
       // Component to change to a sequential color on click.
 AFRAME.registerComponent('cursor-listener', {
   init: function () {
     this.el.addEventListener('click', function (evt) {
       console.log(evt.detail.intersection.point);
+      this.setAttribute('visible', false);
     });
   }
 });
     </script>
   </head>
   <body>
+    <div class="a-frame" style="width:100vw; height:1vw;">
     <a-scene>
       <!--<a-entity id="rain" particle-system="preset: rain; color: #24CAFF; particleCount: 5000"></a-entity>-->
-      <a-box cursor-listener position="-1 1.5 -4" rotation="0 45 0" color="#4CC3D9" dynamic-body></a-box>
-      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4" static-body></a-plane>
+      <a-box cursor-listener position="-1 2.5 -4" rotation="0 45 0" color="#4CC3D9" dynamic-body></a-box>
+      <a-plane cursor-listener position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4" static-body></a-plane>
       <a-camera id="camera" position="-1 1 0" >
       <a-entity cursor="fuse: true; fuseTimeout: 500"
             position="0 0 -1"
@@ -29,5 +32,28 @@ AFRAME.registerComponent('cursor-listener', {
       </a-camera>
       <a-entity id="sky" geometry="primitive: sphere; radius: 5000" scale="-1 1 1"></a-entity>
     </a-scene>
+  </div>
+
+    <div id="container" style="width:100vw; height:99vw;"></div>
   </body>
+  <script>
+    let joystick = new VirtualJoystick({
+      container: document.getElementById("container"),
+      mouseSupport: true,
+      limitStickTravel: true,
+      stickRadius: 40
+    });
+    let predx;
+    let predy;
+    function control() {
+      let dx = Math.round(joystick.deltaX());
+      let dy = Math.round(joystick.deltaY());
+      if(dx != predx){
+        console.log('dx : '+dx+'\t dy : '+dy);
+        predx = dx;  
+        predy = dy;
+      }
+    }
+    setInterval(control,0);
+    </script>
 </html>
