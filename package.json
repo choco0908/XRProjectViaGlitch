@@ -18,7 +18,8 @@
   "homepage": "https://github.com/choco0908/XRProjectViaGlitch#readme",
   "dependencies": {
     "aframe": "^1.2.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "socket.io": "^2.1.1"
   },
   "engines": {
     "node": "12.x"
