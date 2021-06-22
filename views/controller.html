@@ -45,15 +45,25 @@ AFRAME.registerComponent('cursor-listener', {
     });
     let predx;
     let predy;
+    let camera = document.getElementById("camera");
     function control() {
       let dx = Math.round(joystick.deltaX());
       let dy = Math.round(joystick.deltaY());
-      if(dx != predx){
-        console.log('dx : '+dx+'\t dy : '+dy);
-        predx = dx;  
-        predy = dy;
+      let position = camera.getAttribute("position");
+      if(dy < -30 && Math.abs(dx) < 15) {//전
+        position.z -= 0.1;
+        console.log('전');
+      }else if(dy > 30 && Math.abs(dx) < 15) {//후
+        position.z += 0.1;
+        console.log('후');
+      }else if(dx < -30 && Math.abs(dy) < 15) {//좌
+        console.log('좌');
+        position.x -= 0.1;
+      }else if(dx > 30 && Math.abs(dy) < 15){//우
+        console.log('우');
+        position.x += 0.1;
       }
     }
-    setInterval(control,0);
+    setInterval(control,100);
     </script>
 </html>
