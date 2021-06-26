@@ -4,7 +4,7 @@
     <script src="https://unpkg.com/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
     <script src="https://unpkg.com/aframe-extras.ocean@%5E3.5.x/dist/aframe-extras.ocean.min.js"></script>
     <script src="https://unpkg.com/aframe-gradient-sky@1.0.4/dist/gradientsky.min.js"></script>
-    <script src="/js/visualjoystick.js"></script>
+    <script src="/js/joystick.js"></script>
     <script>
       // Component to change to a sequential color on click.
 AFRAME.registerComponent('cursor-listener', {
@@ -34,10 +34,12 @@ AFRAME.registerComponent('cursor-listener', {
           <a-entity id="sky" geometry="primitive: sphere; radius: 5000" scale="-1 1 1"></a-entity>
         </a-scene>
       </div>
-      <div id="container" style="width:100vw; height:99vh;"></div>
+      <div class="joystick-base" touch-action="none" style="width:100vw; height:99vh;">
+    <div class="joystick-shaft" touch-action="none"></div>
+</div>
     </div>
   </body>
-  <script>
+  <!--<script>
     let joystick = new VirtualJoystick({
       container: document.getElementById("container"),
       mouseSupport: true,
@@ -66,5 +68,5 @@ AFRAME.registerComponent('cursor-listener', {
       }
     }
     setInterval(control,100);
-    </script>
+    </script>-->
 </html>
