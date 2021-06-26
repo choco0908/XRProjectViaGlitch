@@ -36,9 +36,27 @@ app.get("/controller", (request, response) => {
 });
 
 // send the default array of dreams to the webpage
+app.get("/face_detection", (request, response) => {
+  // express helps us take JS objects and send them as JSON
+  response.sendFile(__dirname + "/views/mediapipe/face_detection.html");
+});
+
+// send the default array of dreams to the webpage
+app.get("/face_mesh", (request, response) => {
+  // express helps us take JS objects and send them as JSON
+  response.sendFile(__dirname + "/views/mediapipe/face_mesh.html");
+});
+
+// send the default array of dreams to the webpage
 app.get("/hands", (request, response) => {
   // express helps us take JS objects and send them as JSON
   response.sendFile(__dirname + "/views/mediapipe/hands.html");
+});
+
+// send the default array of dreams to the webpage
+app.get("/pose", (request, response) => {
+  // express helps us take JS objects and send them as JSON
+  response.sendFile(__dirname + "/views/mediapipe/pose.html");
 });
 
 // listen for requests :)
