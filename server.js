@@ -9,7 +9,13 @@ const express = require("express");
 const socket = require("socket.io");
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const io = socket(server);
+const socket_client = require("socket.io-client")("https://xrproject.glitch.me");
+
+socket_client.on("connect_error", (err) => {
+  console.log(`connect_error due to ${err.message}`);
+});
+
 io.on('connection',() => {});
 
 
@@ -142,6 +148,10 @@ app.get("/pose", (request, response) => {
 });
 
 // listen for requests :)
+server.listen(process.env.PORT);
+/*
 const listener = app.listen(process.env.PORT, () => {
+  server.listen(process.env.PORT);
   console.log("Your app is listening on port " + listener.address().port);
 });
+*/
