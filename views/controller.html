@@ -39,7 +39,7 @@
                 <a-entity id="character" gltf-model="#woman" position="-1 0 -1" rotation="0 170 0" scale="5 5 5"></a-entity>
                 <a-plane cursor-listener position="0 0 -4" rotation="-90 0 0" width="1000" height="1000" color="#7BC8A4"
                     static-body></a-plane>
-                <a-camera id="camera" position="-1 1 0">
+                <a-camera id="camera" look-controls position="-1 1 0">
                     <a-entity cursor="fuse: true; fuseTimeout: 500" position="0 0 -1"
                         geometry="primitive: ring; radiusInner: 0.005; radiusOuter: 0.01"
                         material="color: black; shader: flat">
@@ -48,14 +48,17 @@
                 <a-entity id="sky" geometry="primitive: sphere; radius: 5000" scale="-1 1 1"></a-entity>
             </a-scene>
         </div>
-        <div style="width:100%; height:40%;display: flex;">
-            <div id="joyDiv" style="width:150px;height:150px;margin:auto 20;"></div>
+        <div style="width:100%; height:40%;display: flex; justify-content: space-between;">
+            <div id="joyDivDir" style="width:150px;height:150px;margin:auto 20;"></div>
+            <div id="joyDivAngle" style="width:150px;height:150px;margin:auto 20;"></div>
         </div>
     </body>
     <script>
       let scene = document.getElementById("a-scene");
       // Create JoyStick object into the DIV 'joyDiv'
-      let joy = new JoyStick('joyDiv');
+      let joydir = new JoyStick('joyDivDir');
+      let joyangle = new JoyStick('joyDivAngle');
+      let angleSpeed = 10;
       let camera = document.getElementById("camera");
       let character = document.getElementById("character");
       
@@ -180,63 +183,94 @@
       
       setInterval(update, 10);
               
-              function control() {
-                direction = joy.GetDir();
-                if (direction == "C")
-                    return;
-                let position = camera.getAttribute("position");
-                let pos_user = character.getAttribute("position");
-                if (direction == "N") { //상
-                    pos_user.z -= 0.1;
-
-                    position.z -= 0.1;
-                    console.log('상');
-                } else if (direction == "NE") { //우상
-                    pos_user.z -= 0.05;
-                    pos_user.x += 0.05;
-
-                    position.z -= 0.05;
-                    position.x += 0.05;
-                    console.log('우상');
-                } else if (direction == "NW") { //좌상
-                    pos_user.z -= 0.05;
-                    pos_user.x -= 0.05;
-
-                    position.z -= 0.05;
-                    position.x -= 0.05;
-                    console.log('좌상');
-                } else if (direction == "S") { //후
-                    pos_user.z += 0.1;
-
-                    position.z += 0.1;
-                    console.log('후');
-                } else if (direction == "SE") { //우후
-                    pos_user.x += 0.05;
-                    pos_user.z += 0.05;
-
-                    position.x += 0.05;
-                    position.z += 0.05;
-                    console.log('우후');
-                } else if (direction == "SW") { //좌후
-                    pos_user.x -= 0.05;
-                    pos_user.z += 0.05;
-
-                    position.x -= 0.05;
-                    position.z += 0.05;
-                    console.log('좌후');
-                } else if (direction == "W") { //좌
-                    console.log('좌');
-                    pos_user.x -= 0.1;
-
-                    position.x -= 0.1;
-                } else if (direction == "E") { //우
-                    console.log('우');
-                    pos_user.x += 0.1;
-
-                    position.x += 0.1;
-                }
-              }
-              setInterval(control, 50);
+      function control() {
+        direction = joydir.GetDir();
+        angle = joyangle.GetDir();
+        if (direction == "C" && angle == "C")
+          return;
+        let position = camera.getAttribute("position");
+        let rotation = character.getAttribute("rotation");
+        let pos_user = character.getAttribute("position");
+        if (direction == "N") { //상
+          pos_user.z -= 0.1;
+          
+          position.z -= 0.1;
+          console.log('상 이동');
+        } else if (direction == "NE") { //우상
+          pos_user.z -= 0.05;
+          pos_user.x += 0.05;
+          
+          position.z -= 0.05;
+          position.x += 0.05;
+          console.log('우상 이동');
+        } else if (direction == "NW") { //좌상
+          pos_user.z -= 0.05;
+          pos_user.x -= 0.05;
+          
+          position.z -= 0.05;
+          position.x -= 0.05;
+          console.log('좌상 이동');
+        } else if (direction == "S") { //후
+          pos_user.z += 0.1;
+          
+          position.z += 0.1;
+          console.log('후 이동');
+        } else if (direction == "SE") { //우후
+          pos_user.x += 0.05;
+          pos_user.z += 0.05;
+          
+          position.x += 0.05;
+          position.z += 0.05;
+          console.log('우후 이동');
+        } else if (direction == "SW") { //좌후
+          pos_user.x -= 0.05;
+          pos_user.z += 0.05;
+          
+          position.x -= 0.05;
+          position.z += 0.05;
+          console.log('좌후 이동');
+        } else if (direction == "W") { //좌
+          console.log('좌 이동');
+          pos_user.x -= 0.1;
+          
+          position.x -= 0.1;
+        } else if (direction == "E") { //우
+          console.log('우 이동');
+          pos_user.x += 0.1;
+          
+          position.x += 0.1;
+        }
+        
+        if (angle == "W" || angle == "NW" || angle == "SW") { //좌
+          character.setAttribute('rotation', {x: 0, y: rotation.y + (1 * angleSpeed), z: 0});
+          console.log('좌후 회전');
+        } else if (angle == "E" || angle == "SE" || angle == "NE") { //우
+          character.setAttribute('rotation', {x: 0, y: rotation.y - (1 * angleSpeed), z: 0});
+          console.log('우 회전');
+        }
+        /*
+        if (angle == "N") { //상
+          console.log('상 회전');
+        } else if (angle == "NE") { //우상
+          console.log('우상 회전');
+        } else if (angle == "NW") { //좌상
+          console.log('좌상 회전');
+        } else if (angle == "S") { //후
+          console.log('후 회전');
+        } else if (angle == "SE") { //우후
+          console.log('우후 회전');
+        } else if (angle == "SW") { //좌후
+          console.log('좌후 회전');
+        } else if (angle == "W") { //좌
+          character.setAttribute('rotation', {x: 0, y: rotation.y + 1, z: 0});
+          console.log('좌후 회전');
+        } else if (angle == "E") { //우
+          character.setAttribute('rotation', {x: 0, y: rotation.y - 1, z: 0});
+          console.log('우 회전');
+        }
+        */
+      }
+      setInterval(control, 50);
               
             </script>
 </html>
