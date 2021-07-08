@@ -39,7 +39,7 @@
                 <a-entity id="character" gltf-model="#woman" position="-1 0 -1" rotation="0 170 0" scale="5 5 5"></a-entity>
                 <a-plane cursor-listener position="0 0 -4" rotation="-90 0 0" width="1000" height="1000" color="#7BC8A4"
                     static-body></a-plane>
-                <a-camera id="camera" position="-1 1 0">
+                <a-camera id="camera" look-controls position="-1 1 0">
                     <a-entity cursor="fuse: true; fuseTimeout: 500" position="0 0 -1"
                         geometry="primitive: ring; radiusInner: 0.005; radiusOuter: 0.01"
                         material="color: black; shader: flat">
@@ -48,73 +48,229 @@
                 <a-entity id="sky" geometry="primitive: sphere; radius: 5000" scale="-1 1 1"></a-entity>
             </a-scene>
         </div>
-        <div style="width:100%; height:40%;display: flex;">
-            <div id="joyDiv" style="width:150px;height:150px;margin:auto 20;"></div>
+        <div style="width:100%; height:40%;display: flex; justify-content: space-between;">
+            <div id="joyDivDir" style="width:150px;height:150px;margin:auto 20;"></div>
+            <div id="joyDivAngle" style="width:150px;height:150px;margin:auto 20;"></div>
         </div>
     </body>
-    <script type="text/javascript">
-        // Create JoyStick object into the DIV 'joyDiv'
-        let joy = new JoyStick('joyDiv');
-        let camera = document.getElementById("camera");
-        let character = document.getElementById("character");
-
-        function control() {
-            const direction = joy.GetDir();
-            if (direction == "C")
-                return;
-            console.log(direction);
-            let position = camera.getAttribute("position");
-            let pos_user = character.getAttribute("position");
-            if (direction == "N") { //상
-                pos_user.z -= 0.1;
+    <script>
+      let scene = document.getElementById("a-scene");
+      // Create JoyStick object into the DIV 'joyDiv'
+      let joydir = new JoyStick('joyDivDir');
+      let joyangle = new JoyStick('joyDivAngle');
+      let angleSpeed = 10;
+      let camera = document.getElementById("camera");
+      let character = document.getElementById("character");
+      
+      let direction;
               
-                position.z -= 0.1;
-                console.log('상');
-            } else if (direction == "NE") { //우상
-                pos_user.z -= 0.05;
-                pos_user.x += 0.05;
-              
-                position.z -= 0.05;
-                position.x += 0.05;
-                console.log('우상');
-            } else if (direction == "NW") { //좌상
-                pos_user.z -= 0.05;
-                pos_user.x -= 0.05;
-              
-                position.z -= 0.05;
-                position.x -= 0.05;
-                console.log('좌상');
-            } else if (direction == "S") { //후
-                pos_user.z += 0.1;
-              
-                position.z += 0.1;
-                console.log('후');
-            } else if (direction == "SE") { //우후
-                pos_user.x += 0.05;
-                pos_user.z += 0.05;
-              
-                position.x += 0.05;
-                position.z += 0.05;
-                console.log('우후');
-            } else if (direction == "SW") { //좌후
-                pos_user.x -= 0.05;
-                pos_user.z += 0.05;
-              
-                position.x -= 0.05;
-                position.z += 0.05;
-                console.log('좌후');
-            } else if (direction == "W") { //좌
-                console.log('좌');
-                pos_user.x -= 0.1;
-              
-                position.x -= 0.1;
-            } else if (direction == "E") { //우
-                console.log('우');
-                pos_user.x += 0.1;
-              
-                position.x += 0.1;
-            }
+      function User(id){
+        this.id = id;
+        this.x = -1;
+        this.y = 0;
+        this.x = -1;
+      }
+      
+      let users = [];
+      let userMap = {};
+      let myId;
+      
+      function join(id,x,y,z) {
+        let user = new User(id);
+        user.x = x;
+        user.y = y;
+        user.z = z;
+        
+        users.push(user);
+        userMap[id] = user;
+        
+        return user;
+      }
+      
+      function leave(id){
+        for(let i = 0; i < users.length; i++){
+          if(users[i].id == id){
+            users.splice(i,1);
+            break;
+          }
         }
-        setInterval(control, 100);
-    </script>
+        delete userMap[id];
+      }
+      
+      function updateState(id,x,y,z){
+        let user = userMap[id];
+        if(!user){
+          return;
+        }
+        user.x = x;
+        user.y = y;
+        user.z = z;
+      }
+      
+      let socket = io.connect('https://xrproject.glitch.me:3000');
+      
+      socket.on('user_id', function(data){
+        myId = data;
+        console.log(myId);
+      });
+      
+      socket.on('join_user', function(data){
+        join(data.id, data.x, data.y, data.z);
+      });
+      
+      socket.on('leave_user', function(data){
+        leave(data);
+      });
+      
+      socket.on('update_state', function(data){
+        updateState(data.id, data.x, data.y, data.z);
+      });
+              
+      function sendData() {
+        let curUser = userMap[myId];
+        if(!curUser){
+          return;
+        }
+        let data = {};
+        data = {
+          id : curUser.id,
+          x : curUser.x,
+          y : curUser.y,
+          z : curUser.z
+        };
+        
+        if(data){
+          socket.emit('send_location', data);
+        };
+      };
+      
+      function render() {
+        for (let i = 0; i < users.length; i++) {
+          let user = users[i];
+          console.log('user.id = ',user.id,' user.x = ', user.x,' user.y = ',user.y,' user.z = ',user.z);
+        }
+        
+        let curUser = userMap[myId];
+        if(!curUser)
+          return;
+        if (direction == "N") { //상
+          curUser.z -= 0.1;
+        } else if (direction == "NE") { //우상
+          curUser.z -= 0.05;
+          curUser.x += 0.05;
+        } else if (direction == "NW") { //좌상
+          curUser.z -= 0.05;
+          curUser.x -= 0.05;
+        } else if (direction == "S") { //후
+          curUser.z += 0.1;
+        } else if (direction == "SE") { //우후
+          curUser.x += 0.05;
+          curUser.z += 0.05;
+        } else if (direction == "SW") { //좌후
+          curUser.x -= 0.05;
+          curUser.z += 0.05;
+        } else if (direction == "W") { //좌
+          curUser.x -= 0.1;
+        } else if (direction == "E") { //우
+          curUser.x += 0.1;
+        }
+        sendData();
+      };
+      
+      function update() {
+        render();
+      }
+      
+      setInterval(update, 10);
+              
+      function control() {
+        direction = joydir.GetDir();
+        angle = joyangle.GetDir();
+        if (direction == "C" && angle == "C")
+          return;
+        let position = camera.getAttribute("position");
+        let rotation = character.getAttribute("rotation");
+        let pos_user = character.getAttribute("position");
+        if (direction == "N") { //상
+          pos_user.z -= 0.1;
+          
+          position.z -= 0.1;
+          console.log('상 이동');
+        } else if (direction == "NE") { //우상
+          pos_user.z -= 0.05;
+          pos_user.x += 0.05;
+          
+          position.z -= 0.05;
+          position.x += 0.05;
+          console.log('우상 이동');
+        } else if (direction == "NW") { //좌상
+          pos_user.z -= 0.05;
+          pos_user.x -= 0.05;
+          
+          position.z -= 0.05;
+          position.x -= 0.05;
+          console.log('좌상 이동');
+        } else if (direction == "S") { //후
+          pos_user.z += 0.1;
+          
+          position.z += 0.1;
+          console.log('후 이동');
+        } else if (direction == "SE") { //우후
+          pos_user.x += 0.05;
+          pos_user.z += 0.05;
+          
+          position.x += 0.05;
+          position.z += 0.05;
+          console.log('우후 이동');
+        } else if (direction == "SW") { //좌후
+          pos_user.x -= 0.05;
+          pos_user.z += 0.05;
+          
+          position.x -= 0.05;
+          position.z += 0.05;
+          console.log('좌후 이동');
+        } else if (direction == "W") { //좌
+          console.log('좌 이동');
+          pos_user.x -= 0.1;
+          
+          position.x -= 0.1;
+        } else if (direction == "E") { //우
+          console.log('우 이동');
+          pos_user.x += 0.1;
+          
+          position.x += 0.1;
+        }
+        
+        if (angle == "W" || angle == "NW" || angle == "SW") { //좌
+          character.setAttribute('rotation', {x: 0, y: rotation.y + (1 * angleSpeed), z: 0});
+          console.log('좌후 회전');
+        } else if (angle == "E" || angle == "SE" || angle == "NE") { //우
+          character.setAttribute('rotation', {x: 0, y: rotation.y - (1 * angleSpeed), z: 0});
+          console.log('우 회전');
+        }
+        /*
+        if (angle == "N") { //상
+          console.log('상 회전');
+        } else if (angle == "NE") { //우상
+          console.log('우상 회전');
+        } else if (angle == "NW") { //좌상
+          console.log('좌상 회전');
+        } else if (angle == "S") { //후
+          console.log('후 회전');
+        } else if (angle == "SE") { //우후
+          console.log('우후 회전');
+        } else if (angle == "SW") { //좌후
+          console.log('좌후 회전');
+        } else if (angle == "W") { //좌
+          character.setAttribute('rotation', {x: 0, y: rotation.y + 1, z: 0});
+          console.log('좌후 회전');
+        } else if (angle == "E") { //우
+          character.setAttribute('rotation', {x: 0, y: rotation.y - 1, z: 0});
+          console.log('우 회전');
+        }
+        */
+      }
+      setInterval(control, 50);
+              
+            </script>
 </html>
