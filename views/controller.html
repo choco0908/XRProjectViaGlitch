@@ -32,19 +32,22 @@
         <div style="width:100%; height:60%;">
             <a-scene embedded>
                 <!--<a-entity id="rain" particle-system="preset: rain; color: #24CAFF; particleCount: 5000"></a-entity>-->
-                <a-box cursor-listener position="-1 2.5 -4" rotation="0 45 0" color="#4CC3D9" dynamic-body></a-box>
+                <!--<a-box cursor-listener position="-1 2.5 -4" rotation="0 45 0" color="#4CC3D9" dynamic-body></a-box>-->
                 <a-assets>
                   <a-asset-item id="woman" src="https://cdn.glitch.com/ab997f9d-4318-48ff-8411-dd95e9efbcf2%2Fwooman.glb?v=1625667322099"></a-asset-item>
+                  <a-asset-item id="tinycity" src="https://cdn.glitch.com/ab997f9d-4318-48ff-8411-dd95e9efbcf2%2Fscene.gltf?v=1626014170937"></a-asset-item>
+                  <a-asset-item id="santa" src="https://cdn.glitch.com/ab997f9d-4318-48ff-8411-dd95e9efbcf2%2Fsanta.gltf?v=1626015182547"></a-asset-item>
                 </a-assets>
-                <a-entity id="character" gltf-model="#woman" position="-1 0 -1" rotation="0 170 0" scale="5 5 5"></a-entity>
-                <a-plane cursor-listener position="0 0 -4" rotation="-90 0 0" width="1000" height="1000" color="#7BC8A4"
-                    static-body></a-plane>
+                <a-entity id="character" gltf-model="#santa" position="-1 0 -1" rotation="0 170 0" scale="0.1 0.1 0.1"></a-entity>
+                <!--<a-plane cursor-listener position="0 0 -4" rotation="-90 0 0" width="1" height="1" color="#7BC8A4"
+                    static-body></a-plane>-->
                 <a-camera id="camera" look-controls position="-1 1 0">
                     <a-entity cursor="fuse: true; fuseTimeout: 500" position="0 0 -1"
                         geometry="primitive: ring; radiusInner: 0.005; radiusOuter: 0.01"
                         material="color: black; shader: flat">
                     </a-entity>
                 </a-camera>
+                <a-entity id="city" gltf-model="#tinycity" position="3 1.1 2.5" scale="0.01 0.01 0.01"></a-entity>
                 <a-entity id="sky" geometry="primitive: sphere; radius: 5000" scale="-1 1 1"></a-entity>
             </a-scene>
         </div>
