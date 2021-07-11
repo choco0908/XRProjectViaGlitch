@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2021 도츠
+Copyright (c) 2021 starfish0114
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,15 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-Model Information:
-* title:	Episode 52 - Santa
-* source:	https://sketchfab.com/3d-models/episode-52-santa-d711f40398774ce69ca8748d20356f93
-* author:	dartuchiwa (https://sketchfab.com/dartuchiwa)
-
-Model License:
-* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
-* requirements:	Author must be credited. Commercial use is allowed.
-
-If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
-This work is based on "Episode 52 - Santa" (https://sketchfab.com/3d-models/episode-52-santa-d711f40398774ce69ca8748d20356f93) by dartuchiwa (https://sketchfab.com/dartuchiwa) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
