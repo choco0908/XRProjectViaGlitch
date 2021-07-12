@@ -13,7 +13,8 @@
         </script>
         <script src="https://unpkg.com/aframe-extras.ocean@%5E3.5.x/dist/aframe-extras.ocean.min.js"></script>
         <script src="https://unpkg.com/aframe-gradient-sky@1.0.4/dist/gradientsky.min.js"></script>
-        <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
         <script src="/js/joystic.js"></script>
         <script>
             // Component to change to a sequential color on click.
@@ -30,17 +31,13 @@
 
     <body class="hidden">
         <div style="width:100%; height:60%;">
-            <a-scene embedded>
-                <!--<a-entity id="rain" particle-system="preset: rain; color: #24CAFF; particleCount: 5000"></a-entity>-->
-                <!--<a-box cursor-listener position="-1 2.5 -4" rotation="0 45 0" color="#4CC3D9" dynamic-body></a-box>-->
+            <a-scene id="scene" embedded>
                 <a-assets>
                   <a-asset-item id="woman" src="https://cdn.glitch.com/ab997f9d-4318-48ff-8411-dd95e9efbcf2%2Fwooman.glb?v=1625667322099"></a-asset-item>
+                  <a-asset-item id="man" src="https://cdn.glitch.com/ab997f9d-4318-48ff-8411-dd95e9efbcf2%2Fman.glb?v=1625667336453"></a-asset-item>
                   <a-asset-item id="tinycity" src="https://cdn.glitch.com/ab997f9d-4318-48ff-8411-dd95e9efbcf2%2Fscene.gltf?v=1626014170937"></a-asset-item>
                   <a-asset-item id="santa" src="https://cdn.glitch.com/ab997f9d-4318-48ff-8411-dd95e9efbcf2%2Fsanta.gltf?v=1626015182547"></a-asset-item>
                 </a-assets>
-                <a-entity id="character" gltf-model="#santa" position="-1 0 -1" rotation="0 170 0" scale="0.1 0.1 0.1"></a-entity>
-                <!--<a-plane cursor-listener position="0 0 -4" rotation="-90 0 0" width="1" height="1" color="#7BC8A4"
-                    static-body></a-plane>-->
                 <a-camera id="camera" look-controls position="-1 1 0">
                     <a-entity cursor="fuse: true; fuseTimeout: 500" position="0 0 -1"
                         geometry="primitive: ring; radiusInner: 0.005; radiusOuter: 0.01"
@@ -63,27 +60,30 @@
       let joyangle = new JoyStick('joyDivAngle');
       let angleSpeed = 10;
       let camera = document.getElementById("camera");
-      let character = document.getElementById("character");
+      const charStrings = ["woman","man","santa"];
       
       let direction;
+      let xvalue = -1;
+      let yvalue = 0;
+      let zvalue = -1;
+      let anglev = 180;
               
-      function User(id){
+      function User(id,x,y,z,ang,idx){
         this.id = id;
-        this.x = -1;
-        this.y = 0;
-        this.x = -1;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.ang = ang;
+        this.idx = idx;
       }
       
       let users = [];
       let userMap = {};
       let myId;
       
-      function join(id,x,y,z) {
-        let user = new User(id);
-        user.x = x;
-        user.y = y;
-        user.z = z;
-        
+      function join(id,x,y,z,ang,idx) { 
+        let user = new User(id,x,y,z,ang,idx);
+        appendObject(id,x,y,z,ang,idx);
         users.push(user);
         userMap[id] = user;
         
@@ -100,7 +100,7 @@
         delete userMap[id];
       }
       
-      function updateState(id,x,y,z){
+      function updateState(id,x,y,z,ang,idx){
         let user = userMap[id];
         if(!user){
           return;
@@ -108,17 +108,39 @@
         user.x = x;
         user.y = y;
         user.z = z;
+        user.ang = ang;
+        user.idx = idx;
       }
       
-      let socket = io.connect('https://xrproject.glitch.me:3000');
+      function appendObject(id, x, y, z, ang,idx) {
+        console.log('append requested by ',id);
+        const pos = {x:x, y:y, z:z};
+        let size = 0.1
+        if(idx < 2)
+          size = 3
+        $('<a-entity />', {
+          id: id,
+          'gltf-model': '#'+charStrings[idx],
+          position: pos,  // doesn't seem to do anything, known issue
+          scale: size+" "+size+" "+size,
+          rotation: "0 "+ang+" 0",
+          appendTo : $('#scene')
+        });
+       document.getElementById(id).setAttribute("position", pos); // this does set position as a workaround
+      }
+      
+      let socket = io();
+      
+      socket.on("connect", () => { console.log("connection server"); });
       
       socket.on('user_id', function(data){
         myId = data;
-        console.log(myId);
+        console.log('my id = ',myId);
       });
       
       socket.on('join_user', function(data){
-        join(data.id, data.x, data.y, data.z);
+        console.log('join_user ',data);
+        join(data.id,data.x,data.y,data.z,data.ang,data.idx);
       });
       
       socket.on('leave_user', function(data){
@@ -126,7 +148,7 @@
       });
       
       socket.on('update_state', function(data){
-        updateState(data.id, data.x, data.y, data.z);
+        updateState(data.id, data.x, data.y, data.z, data.ang, data.idx);
       });
               
       function sendData() {
@@ -139,7 +161,9 @@
           id : curUser.id,
           x : curUser.x,
           y : curUser.y,
-          z : curUser.z
+          z : curUser.z,
+          ang : curUser.ang,
+          idx : curUser.idx
         };
         
         if(data){
@@ -150,33 +174,23 @@
       function render() {
         for (let i = 0; i < users.length; i++) {
           let user = users[i];
-          console.log('user.id = ',user.id,' user.x = ', user.x,' user.y = ',user.y,' user.z = ',user.z);
+          if(user.id == myId)
+            continue;
+          pos = {x:user.x, y:user.y, z:user.z}
+          ang = {x:0, y:user.ang, z:0}
+          document.getElementById(user.id).setAttribute("position", pos);
+          document.getElementById(user.id).setAttribute("rotation", ang);
         }
         
         let curUser = userMap[myId];
         if(!curUser)
           return;
-        if (direction == "N") { //상
-          curUser.z -= 0.1;
-        } else if (direction == "NE") { //우상
-          curUser.z -= 0.05;
-          curUser.x += 0.05;
-        } else if (direction == "NW") { //좌상
-          curUser.z -= 0.05;
-          curUser.x -= 0.05;
-        } else if (direction == "S") { //후
-          curUser.z += 0.1;
-        } else if (direction == "SE") { //우후
-          curUser.x += 0.05;
-          curUser.z += 0.05;
-        } else if (direction == "SW") { //좌후
-          curUser.x -= 0.05;
-          curUser.z += 0.05;
-        } else if (direction == "W") { //좌
-          curUser.x -= 0.1;
-        } else if (direction == "E") { //우
-          curUser.x += 0.1;
-        }
+        
+        curUser.x = xvalue;
+        curUser.y = yvalue;
+        curUser.z = zvalue;
+        curUser.ang = anglev;
+        
         sendData();
       };
       
@@ -187,6 +201,11 @@
       setInterval(update, 10);
               
       function control() {
+        let curUser = userMap[myId];
+        if(!curUser){
+          return;
+        }
+        let character = document.getElementById(myId);
         direction = joydir.GetDir();
         angle = joyangle.GetDir();
         if (direction == "C" && angle == "C")
@@ -244,36 +263,22 @@
           position.x += 0.1;
         }
         
+        xvalue = pos_user.x;
+        yvalue = pos_user.y;
+        zvalue = pos_user.z;
+        
         if (angle == "W" || angle == "NW" || angle == "SW") { //좌
-          character.setAttribute('rotation', {x: 0, y: rotation.y + (1 * angleSpeed), z: 0});
+          anglev = rotation.y + (1 * angleSpeed)
+          character.setAttribute('rotation', {x: 0, y: anglev, z: 0});
           console.log('좌후 회전');
         } else if (angle == "E" || angle == "SE" || angle == "NE") { //우
-          character.setAttribute('rotation', {x: 0, y: rotation.y - (1 * angleSpeed), z: 0});
+          anglev = rotation.y - (1 * angleSpeed)
+          character.setAttribute('rotation', {x: 0, y: anglev, z: 0});
           console.log('우 회전');
         }
-        /*
-        if (angle == "N") { //상
-          console.log('상 회전');
-        } else if (angle == "NE") { //우상
-          console.log('우상 회전');
-        } else if (angle == "NW") { //좌상
-          console.log('좌상 회전');
-        } else if (angle == "S") { //후
-          console.log('후 회전');
-        } else if (angle == "SE") { //우후
-          console.log('우후 회전');
-        } else if (angle == "SW") { //좌후
-          console.log('좌후 회전');
-        } else if (angle == "W") { //좌
-          character.setAttribute('rotation', {x: 0, y: rotation.y + 1, z: 0});
-          console.log('좌후 회전');
-        } else if (angle == "E") { //우
-          character.setAttribute('rotation', {x: 0, y: rotation.y - 1, z: 0});
-          console.log('우 회전');
-        }
-        */
+
       }
-      setInterval(control, 50);
+      setInterval(control, 60);
               
             </script>
 </html>
