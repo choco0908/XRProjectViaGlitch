@@ -10,25 +10,26 @@ const socket = require("socket.io");
 const app = express();
 const server = require('http').createServer(app);
 const io = socket(server);
-const socket_client = require("socket.io-client")("https://xrproject.glitch.me");
+//const socket_client = require("socket.io-client")("https://xrproject.glitch.me");
 
-socket_client.on("connect_error", (err) => {
+/*socket_client.on("connect_error", (err) => {
   console.log(`connect_error due to ${err.message}`);
 });
-
-io.on('connection',() => {});
-
-
-const startX = 0;
+*/
+const startX = -1;
 const startY = 0;
-const startZ = 0;
+const startZ = -1;
+const startAng = 180;
 
 class User{
   constructor(socket){
+    console.log('User create requested ',socket.id);
     this.socket = socket;
     this.x = startX;
     this.y = startY;
     this.z = startZ;
+    this.ang = startAng;
+    this.idx = Math.floor(Math.random() * 3);
   }
   
   get id() {
@@ -68,15 +69,19 @@ io.on('connection', function(socket) {
   });
   
   let newUser = join(socket);
+  let charStrings = ["woman","man","santa"];
   socket.emit('user_id', socket.id);
   
   for(let i = 0; i < users.length; i++){
     let user = users[i];
+    console.log(`${user.id}님의 캐릭터는 ${charStrings[user.idx]}입니다.`);
     socket.emit('join_user', {
       id: user.id,
       x: user.x,
       y: user.y,
-      z: user.z
+      z: user.z,
+      ang: user.ang,
+      idx: user.idx
     });
   }
   
@@ -84,7 +89,9 @@ io.on('connection', function(socket) {
     id: socket.id,
     x: newUser.x,
     y: newUser.y,
-    z: newUser.z
+    z: newUser.z,
+    ang: newUser.ang,
+    idx: newUser.idx
   });
   
   socket.on('send_location', function(data){
@@ -92,7 +99,9 @@ io.on('connection', function(socket) {
       id: data.id,
       x: data.x,
       y: data.y,
-      z: data.z
+      z: data.z,
+      ang: data.ang,
+      idx: data.idx
     });
   })
 })
@@ -148,7 +157,9 @@ app.get("/pose", (request, response) => {
 });
 
 // listen for requests :)
-server.listen(process.env.PORT);
+server.listen(process.env.PORT, () => {
+  console.log("Your app is listening on port " + process.env.PORT);
+});
 /*
 const listener = app.listen(process.env.PORT, () => {
   server.listen(process.env.PORT);
