@@ -98,8 +98,13 @@
           }
         }
         delete userMap[id];
-        const el = document.getElementById(id);
-        el.parentNode.removeChild(el);
+        while (true) {
+          const el = document.getElementById(id);
+          if(!el)
+            break;
+          console.log(id+'is removed');
+          el.parentNode.removeChild(el);
+        }
       }
       
       function updateState(id,x,y,z,ang,idx){
@@ -115,6 +120,8 @@
       }
       
       function appendObject(id, x, y, z, ang,idx) {
+        if (document.getElementById(id))
+          return;
         console.log('append requested by ',id);
         const pos = {x:x, y:y, z:z};
         let size = 0.1
@@ -284,7 +291,7 @@
       setInterval(control, 60);
               
   </script>
-  <script>
+  <!--<script>
     window.onunload = function () {
       leave(myId);
     }
@@ -303,5 +310,5 @@
         return false;
       }
   }
-  </script>
+  </script>-->
 </html>
