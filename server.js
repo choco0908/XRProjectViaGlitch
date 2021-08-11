@@ -18,18 +18,18 @@ const io = socket(server);
 */
 const startX = -1;
 const startY = 0;
-const startZ = -1;
+const startZ = -1.2;
 const startAng = 180;
 
 class User{
   constructor(socket){
-    console.log('User create requested ',socket.id);
     this.socket = socket;
     this.x = startX;
     this.y = startY;
     this.z = startZ;
     this.ang = startAng;
     this.idx = Math.floor(Math.random() * 3);
+    console.log('User create requested ',socket.id,' with idx ',this.idx);
   }
   
   get id() {
@@ -69,7 +69,7 @@ io.on('connection', function(socket) {
   });
   
   let newUser = join(socket);
-  let charStrings = ["woman","man","santa"];
+  let charStrings = ["woman","man","robot"];
   socket.emit('user_id', socket.id);
   
   for(let i = 0; i < users.length; i++){
