@@ -75,6 +75,8 @@
   let zvalue = -1.3;
   let anglev = 180;
 
+  let timerId = null;
+
   function User(id, x, y, z, ang, idx) {
     this.id = id;
     this.x = x;
@@ -259,6 +261,9 @@
     let position = camera.getAttribute("position");
     let rotation = character.getAttribute("rotation");
     let pos_user = character.getAttribute("position");
+
+    let isposition = false;
+
     if (direction == "N") { //상
       pos_user.z -= 0.1;
 
@@ -315,8 +320,8 @@
 
     const el = document.getElementById(myId);
     console.log(el);
-    el.setAttribute("animation-mixer", '');
-    el.setAttribute("animation-mixer", 'clip:*; repetitions:1;');
+    el.removeAttribute("animation-mixer");
+    el.setAttribute("animation-mixer", 'loop:once; clampWhenFinished:true;');
     console.log('send animation to ', myId);
 
     if (angle == "W" || angle == "NW" || angle == "SW") { //좌
@@ -338,7 +343,7 @@
     }
 
   }
-  setInterval(control, 60);
+  timerId = setInterval(control, 60);
 </script>
 <!--<script>
     window.onunload = function () {
