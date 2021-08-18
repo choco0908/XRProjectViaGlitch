@@ -104,6 +104,14 @@ io.on('connection', function(socket) {
       idx: data.idx
     });
   })
+
+  socket.on('send_broadcast_message', function(data){
+    socket.broadcast.emit('receive_broadcast_message', {
+      id: data.id,
+      msg: data.msg
+    });
+    console.log(`${data.id}님이 ${data.msg} 전송함.`);
+  })
 })
 
 // make all the files in 'public' available

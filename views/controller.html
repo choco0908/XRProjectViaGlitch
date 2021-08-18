@@ -16,6 +16,9 @@
   <script src="https://unpkg.com/aframe-gradient-sky@1.0.4/dist/gradientsky.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+  <link href="style.css" rel="stylesheet">
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/joystic.js"></script>
   <script>
@@ -61,13 +64,40 @@
     <div id="joyDivAngle" style="width:150px;height:150px;margin:auto 20;"></div>
   </div>
   <div id="chat" style="width:100%; height:10%;">
-    <p>{{message}}</p>
+    <div class="bottom_wrapper clearfix">
+      <div class="message_input_wrapper">
+        <input class="message_input" placeholder="Type your message here..." v-model="message"/>
+      </div>
+      <div class="send_message" @click="sendMessage">
+        <div class="icon"></div>
+        <div class="text">Send</div>
+      </div>
+    </div>
+  </div>
   </div>
   <script>
     var chat = new Vue({
       el: '#chat',
       data: {
-        message: '채팅 영역 입니다.'
+        message: ''
+      },
+      methods: {
+        sendMessage: function() {
+          let curUser = userMap[myId];
+          if (!curUser) {
+            return;
+          }
+          let data = {};
+          data = {
+            id: curUser.id,
+            msg: this.message
+          };
+
+          if (data && data.msg != '') {
+            socket.emit('send_broadcast_message', data);
+            this.message = '';
+          };
+        }
       }
     })
   </script>
@@ -203,6 +233,10 @@
     updateState(data.id, data.x, data.y, data.z, data.ang, data.idx);
   });
 
+  socket.on('receive_broadcast_message', function (data) {
+    console.log(`received ${data.message} from ${data.id}`);
+  });
+
   function sendData() {
     let curUser = userMap[myId];
     if (!curUser) {
@@ -280,47 +314,47 @@
       pos_user.z -= 0.1;
 
       position.z -= 0.1;
-      console.log('상 이동');
+      //console.log('상 이동');
     } else if (direction == "NE") { //우상
       pos_user.z -= 0.05;
       pos_user.x += 0.05;
 
       position.z -= 0.05;
       position.x += 0.05;
-      console.log('우상 이동');
+      //console.log('우상 이동');
     } else if (direction == "NW") { //좌상
       pos_user.z -= 0.05;
       pos_user.x -= 0.05;
 
       position.z -= 0.05;
       position.x -= 0.05;
-      console.log('좌상 이동');
+      //console.log('좌상 이동');
     } else if (direction == "S") { //후
       pos_user.z += 0.1;
 
       position.z += 0.1;
-      console.log('후 이동');
+      //console.log('후 이동');
     } else if (direction == "SE") { //우후
       pos_user.x += 0.05;
       pos_user.z += 0.05;
 
       position.x += 0.05;
       position.z += 0.05;
-      console.log('우후 이동');
+      //console.log('우후 이동');
     } else if (direction == "SW") { //좌후
       pos_user.x -= 0.05;
       pos_user.z += 0.05;
 
       position.x -= 0.05;
       position.z += 0.05;
-      console.log('좌후 이동');
+      //console.log('좌후 이동');
     } else if (direction == "W") { //좌
-      console.log('좌 이동');
+      //console.log('좌 이동');
       pos_user.x -= 0.1;
 
       position.x -= 0.1;
     } else if (direction == "E") { //우
-      console.log('우 이동');
+      //console.log('우 이동');
       pos_user.x += 0.1;
 
       position.x += 0.1;
@@ -331,10 +365,8 @@
     zvalue = pos_user.z;
 
     const el = document.getElementById(myId);
-    console.log(el);
     el.removeAttribute("animation-mixer");
     el.setAttribute("animation-mixer", 'loop:once; clampWhenFinished:true;');
-    console.log('send animation to ', myId);
 
     if (angle == "W" || angle == "NW" || angle == "SW") { //좌
       anglev = rotation.y + (1 * angleSpeed)
@@ -343,7 +375,7 @@
         y: anglev,
         z: 0
       });
-      console.log('좌 회전');
+      //console.log('좌 회전');
     } else if (angle == "E" || angle == "SE" || angle == "NE") { //우
       anglev = rotation.y - (1 * angleSpeed)
       character.setAttribute('rotation', {
@@ -351,7 +383,7 @@
         y: anglev,
         z: 0
       });
-      console.log('우 회전');
+      //console.log('우 회전');
     }
 
   }
