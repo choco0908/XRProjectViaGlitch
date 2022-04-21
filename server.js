@@ -16,8 +16,8 @@ const io = socket(server);
   console.log(`connect_error due to ${err.message}`);
 });
 */
-const startX = -1;
-const startY = 0;
+const startX = 0;
+const startY = -1;
 const startZ = -1.2;
 const startAng = 180;
 
