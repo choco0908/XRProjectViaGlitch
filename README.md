@@ -1,6 +1,10 @@
 # XRProjectViaGlitch
 XRProject For WebXR
 
+This Project is made with [A-Frame](https://aframe.io/)
+
+The XR Communication Tool's prototype using A-Frame
+
 # HomePage
 https://xrproject.glitch.me/
 
