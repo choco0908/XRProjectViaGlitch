@@ -40,24 +40,14 @@
     <a-scene id="scene" embedded>
       <a-assets>
         <a-asset-item id="woman"
-          src="https://cdn.glitch.com/ab997f9d-4318-48ff-8411-dd95e9efbcf2%2Fwalk_woman.gltf?v=1628684446325">
-        </a-asset-item>
-        <a-asset-item id="man"
-          src="https://cdn.glitch.com/ab997f9d-4318-48ff-8411-dd95e9efbcf2%2Fman.gltf?v=1629794462672">
+          src="https://cdn.glitch.global/ab997f9d-4318-48ff-8411-dd95e9efbcf2/walk_woman.gltf?v=1652272852859">
         </a-asset-item>
         <a-asset-item id="robot"
-          src="https://cdn.glitch.com/ab997f9d-4318-48ff-8411-dd95e9efbcf2%2Fwalk_robot.gltf?v=1628687839062">
+          src="https://cdn.glitch.global/ab997f9d-4318-48ff-8411-dd95e9efbcf2/walk_robot.gltf?v=1652272852792">
         </a-asset-item>
         <a-asset-item id="tinycity"
           src="https://cdn.glitch.com/ab997f9d-4318-48ff-8411-dd95e9efbcf2%2Fscene.gltf?v=1626014170937"></a-asset-item>
       </a-assets>
-      <!--
-      <a-camera id="camera" position="0 0 0" rotation="0 0 0" look-controls>
-        <a-entity cursor="fuse: true; fuseTimeout: 500" position="0 0 -1"
-          geometry="primitive: ring; radiusInner: 0.005; radiusOuter: 0.01" material="color: black; shader: flat">
-        </a-entity>
-      </a-camera>
--->
       <a-entity id="city" gltf-model="#tinycity" position="4 0.1 2.5" scale="0.01 0.01 0.01"></a-entity>
       <a-entity id="sky" geometry="primitive: sphere; radius: 5000" scale="-1 1 1"></a-entity>
     </a-scene>
@@ -110,7 +100,7 @@
   let joydir = new JoyStick('joyDivDir');
   let joyangle = new JoyStick('joyDivAngle');
   let angleSpeed = 10;
-  const charStrings = ["woman", "man", "robot"];
+  const charStrings = ["robot"];
 
   var rig;
   let direction;
@@ -189,8 +179,7 @@
     let size = 0.1;
     if (charStrings[idx] == 'woman') {
       size = 0.005;
-    } else if (charStrings[idx] == 'man') {
-      size = 0.005;
+      ang = 0;
     } else if (charStrings[idx] == 'robot') {
       size = 0.018;
       ang -= 180;
@@ -314,8 +303,11 @@
     //let character = document.getElementById(myId);
     direction = joydir.GetDir();
     angle = joyangle.GetDir();
-    if (direction == "C" && angle == "C")
+    if (direction == "C" && angle == "C") {
+      const el = document.getElementById(myId);
+      el.removeAttribute("animation-mixer");
       return;
+    }
     /*
     let cameraEl = document.getElementById("rig");
     let position = cameraEl.getAttribute("position");
@@ -393,10 +385,7 @@
       position.x += 0.1;
     }
 */
-    let pos_user = document.getElementById(myId).getAttribute("position");
-    xvalue = pos_user.x;
-    yvalue = pos_user.y;
-    zvalue = pos_user.z;
+    
     
 
     if (angle == "W" || angle == "NW" || angle == "SW") { //좌
@@ -426,9 +415,13 @@
       */
     } else {
       const el = document.getElementById(myId);
-      el.removeAttribute("animation-mixer");
-      el.setAttribute("animation-mixer", 'loop:once; clampWhenFinished:true;');
+      el.setAttribute("animation-mixer", 'loop:infinte; clampWhenFinished:true;');
     }
+    let pos_user = document.getElementById(myId).getAttribute("position");
+    xvalue = pos_user.x;
+    yvalue = pos_user.y;
+    zvalue = pos_user.z;
+    anglev = document.getElementById(myId).getAttribute("rotation").y;
 
   }
   timerId = setInterval(control, 60);

@@ -28,8 +28,8 @@ class User{
     this.y = startY;
     this.z = startZ;
     this.ang = startAng;
-    this.idx = Math.floor(Math.random() * 3);
-    console.log('User create requested ',socket.id,' with idx ',this.idx);
+    this.idx = Math.floor(Math.random() * 1);
+    console.log('User create requested ',socket.id,' with idx ',this.idx, ' with ang ',this.ang);
   }
   
   get id() {
@@ -69,7 +69,7 @@ io.on('connection', function(socket) {
   });
   
   let newUser = join(socket);
-  let charStrings = ["woman","man","robot"];
+  let charStrings = ["robot"];
   socket.emit('user_id', socket.id);
   
   for(let i = 0; i < users.length; i++){

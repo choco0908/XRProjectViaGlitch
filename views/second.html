@@ -71,4 +71,23 @@
       <a-entity id="light" light="type: ambient; color: #888"></a-entity>
     </a-scene>-->
   </body>
+  
+  <script>
+  let scene = document.getElementById("a-scene");
+  let joydir = new JoyStick('joyDivDir');
+  let joyangle = new JoyStick('joyDivAngle');
+  
+  function control() {
+    let curUser = userMap[myId];
+    if (!curUser) {
+      return;
+    }
+    direction = joydir.GetDir();
+    angle = joyangle.GetDir();
+    if (direction == "C" && angle == "C") {
+      const el = document.getElementById(myId);
+      el.removeAttribute("animation-mixer");
+      return;
+    }
+  </script>
 </html>

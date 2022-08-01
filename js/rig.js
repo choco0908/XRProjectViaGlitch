@@ -7,6 +7,7 @@ function Rig(rig) {
   this.rot_x = 0;
   this.rot_y = 0;
   this.rot_z = 0;
+  
   this.object3D = rig.object3D;
   
   this.vect_x = 0;
@@ -17,12 +18,16 @@ function Rig(rig) {
     this.object3D.position.z = this.pos_z -= this.vect_y *amount;
   };
   this.walkforwardleft = (amount) => {
-    this.object3D.position.z = this.pos_z -= this.vect_y *amount;
+    this.object3D.position.x = this.pos_x += this.vect_x *amount;
+    this.object3D.position.x = this.pos_x -= this.vect_y *amount;
     this.object3D.position.z = this.pos_z -= this.vect_x *amount;
+    this.object3D.position.z = this.pos_z -= this.vect_y *amount;
   };
   this.walkforwardright = (amount) => {
     this.object3D.position.x = this.pos_x += this.vect_x *amount;
     this.object3D.position.x = this.pos_x += this.vect_y *amount;
+    this.object3D.position.z = this.pos_z += this.vect_x *amount;
+    this.object3D.position.z = this.pos_z -= this.vect_y *amount;
   };
   this.backward = (amount) => {
     this.object3D.position.x = this.pos_x -= this.vect_x *amount;
@@ -31,10 +36,14 @@ function Rig(rig) {
   this.walkbackwardleft = (amount) => {
     this.object3D.position.x = this.pos_x -= this.vect_x *amount;
     this.object3D.position.x = this.pos_x -= this.vect_y *amount;
+    this.object3D.position.z = this.pos_z -= this.vect_x *amount;
+    this.object3D.position.z = this.pos_z += this.vect_y *amount;
   };
   this.walkbackwardright = (amount) => {
-    this.object3D.position.z = this.pos_z += this.vect_y *amount;
+    this.object3D.position.x = this.pos_x -= this.vect_x *amount;
+    this.object3D.position.x = this.pos_x += this.vect_y *amount;
     this.object3D.position.z = this.pos_z += this.vect_x *amount;
+    this.object3D.position.z = this.pos_z += this.vect_y *amount;
   };
   this.walkleft = (amount) => {
     this.object3D.position.x = this.pos_x -= this.vect_y *amount;
